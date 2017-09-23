@@ -1,8 +1,8 @@
 class MoviesController < ApplicationController
 
-  def movie_params
-    params.require(:movie).permit(:title, :rating, :description, :release_date)
-  end
+  #def movie_params
+  #  params.require(:movie).permit(:title, :rating, :description, :release_date)
+  #end
 
   def show
     flash[:notice] = "#{params}"
@@ -12,15 +12,19 @@ class MoviesController < ApplicationController
   end
 
   def index
-    #flash[:notice] = "#{params}"
-    #sortType = params[:sort]
-    #@movies = Movie.all
+    flash[:notice] = "#{params}"
     @movies = Movie.order(params[:sort_by])
     @sort_column = params[:sort_by]
-    #case @sort_by
-     # when "title"
-      #  Movie.order
-    #end
+    if params.has_key? :ratings
+      @movies = Movie.where(:rating => params[:ratings].keys).order(params[:sort_by])
+    end
+    @sort_column = params[:sort_by]
+    @all_ratings = Movie.all_ratings
+    @filtered_ratings = params[:ratings]
+    if defined?(@filtered_ratings).nil? # will now return true or false
+      @filtered_ratings = Hash.new
+    end
+
   end
 
   def new
