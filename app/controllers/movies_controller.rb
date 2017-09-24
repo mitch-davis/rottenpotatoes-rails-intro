@@ -16,7 +16,7 @@ class MoviesController < ApplicationController
     # "initialize" session variables
     if not session.has_key? :ratings
       session[:ratings] = Movie.all_ratings
-      session[:sort_by] = ""
+      session[:sort_by] = "title"
     end
     
     # update session variables as necessary
