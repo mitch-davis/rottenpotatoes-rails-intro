@@ -19,7 +19,6 @@ class MoviesController < ApplicationController
       Movie.all_ratings.each do |next_rating|
         all.merge(next_rating: 1)
       end
-      #flash[:notice] = "www#{all}"
       session[:ratings] = all
       session[:sort_by] = "title"
     end
@@ -34,10 +33,12 @@ class MoviesController < ApplicationController
       session[:sort_by] = params[:sort_by]
     end
     
+    flash[:notice] = "www#{session[:ratings]}"
+    
     #select movies which match rating criteria; sort by specified sort type  
     @movies = Movie.where(:rating => session[:ratings].keys).order(session[:sort_by])
 
-    #set the sort column (for hilighting column header)
+    #set the sort column (for highlighting column header)
     @sort_column = session[:sort_by]
     #all possible ratings
     @all_ratings = Movie.all_ratings
