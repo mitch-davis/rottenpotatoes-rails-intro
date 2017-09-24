@@ -12,19 +12,30 @@ class MoviesController < ApplicationController
   end
 
   def index
-    flash[:notice] = "#{params}"
-    @movies = Movie.order(params[:sort_by])
-    @sort_column = params[:sort_by]
-    if params.has_key? :ratings
-      @movies = Movie.where(:rating => params[:ratings].keys).order(params[:sort_by])
-    end
-    @sort_column = params[:sort_by]
-    @all_ratings = Movie.all_ratings
-    @filtered_ratings = params[:ratings]
-    if defined?(@filtered_ratings).nil? # will now return true or false
-      @filtered_ratings = Hash.new
-    end
 
+    # "initialize" session variables
+    if not session.has_key? :ratings
+      session[:ratings] = Movie.all_ratings
+      session[:sort_by] = ""
+    end
+    
+    # update session variables as necessary
+    if params.has_key? :ratings and params.has_key? :sort_by
+      session[:ratings] = params[:ratings]
+      session[:sort_by] = params[:sort_by]
+    elsif params.has_key? :ratings
+      session[:ratings] = params[:ratings]
+    elsif params.has_key? :sort_by
+      session[:sort_by] = params[:sort_by]
+    end
+    
+    #select movies which match rating criteria; sort by specified sort type  
+    @movies = Movie.where(:rating => session[:ratings].keys).order(session[:sort_by])
+
+    #set the sort column (for hilighting column header)
+    @sort_column = session[:sort_by]
+    #all possible ratings
+    @all_ratings = Movie.all_ratings
   end
 
   def new
