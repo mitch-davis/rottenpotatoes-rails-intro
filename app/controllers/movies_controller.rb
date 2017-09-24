@@ -12,14 +12,15 @@ class MoviesController < ApplicationController
   end
 
   def index
-    flash[:notice] = "#{params[:ratings]}"
+
     # "initialize" session variables
     if not session.has_key? :ratings
-      @all_ratings = Hash.new
+      all = Hash.new
       Movie.all_ratings.each do |next_rating|
-        @all_ratings.push(next_rating => 1)
+        all.merge(next_rating: 1)
       end
-      session[:ratings] = @all_ratings
+      #flash[:notice] = "www#{all}"
+      session[:ratings] = all
       session[:sort_by] = "title"
     end
     
