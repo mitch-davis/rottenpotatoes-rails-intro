@@ -15,7 +15,7 @@ class MoviesController < ApplicationController
     flash[:notice] = "#{params[:ratings]}"
     # "initialize" session variables
     if not session.has_key? :ratings
-      @all_ratings = hash.new
+      @all_ratings = Hash.new
       Movie.all_ratings.each do |next_rating|
         @all_ratings.push(next_rating => 1)
       end
