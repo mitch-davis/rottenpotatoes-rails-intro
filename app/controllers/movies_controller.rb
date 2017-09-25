@@ -12,15 +12,14 @@ class MoviesController < ApplicationController
   end
 
   def index
-
     # "initialize" session variables
-    if not session.has_key? :ratings
-      all = Hash.new
-      Movie.all_ratings.each do |next_rating|
-        all.merge(next_rating: 1)
+    if session[:ratings] == NIL
+      @all = {}
+      Movie.get_ratings.each do |next_rating|
+        @all[:"#{next_rating}"] = 1
       end
-      session[:ratings] = all
-      session[:sort_by] = "title"
+      session[:ratings] = @all
+      session[:sort_by] = "title" #default
     end
     
     # update session variables as necessary
@@ -29,11 +28,10 @@ class MoviesController < ApplicationController
       session[:sort_by] = params[:sort_by]
     elsif params.has_key? :ratings
       session[:ratings] = params[:ratings]
+      #flash[:notice] = "rating filter #{session[:sort_by]}"
     elsif params.has_key? :sort_by
       session[:sort_by] = params[:sort_by]
     end
-    
-    flash[:notice] = "www#{session[:ratings]}"
     
     #select movies which match rating criteria; sort by specified sort type  
     @movies = Movie.where(:rating => session[:ratings].keys).order(session[:sort_by])
@@ -41,7 +39,7 @@ class MoviesController < ApplicationController
     #set the sort column (for highlighting column header)
     @sort_column = session[:sort_by]
     #all possible ratings
-    @all_ratings = Movie.all_ratings
+    @all_ratings = Movie.get_ratings
   end
 
   def new
@@ -71,5 +69,4 @@ class MoviesController < ApplicationController
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
   end
-
 end
